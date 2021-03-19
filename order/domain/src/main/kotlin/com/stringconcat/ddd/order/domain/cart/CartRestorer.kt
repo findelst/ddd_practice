@@ -12,6 +12,7 @@ object CartRestorer {
         forCustomer: CustomerId,
         created: OffsetDateTime,
         meals: Map<MealId, Count>,
+        mealCountLimitRule: MealCountLimitRule,
         version: Version
     ): Cart {
         return Cart(
@@ -19,6 +20,7 @@ object CartRestorer {
             forCustomer = forCustomer,
             created = created,
             meals = meals,
+            mealCountLimitRule = mealCountLimitRule,
             version = version
         )
     }

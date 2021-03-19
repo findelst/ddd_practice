@@ -19,7 +19,7 @@ class CartRestorerTest {
         val version = version()
         val meals = mapOf(mealId() to count())
         val created = OffsetDateTime.now()
-        val cart = CartRestorer.restoreCart(cartId, guestId, created, meals, version)
+        val cart = CartRestorer.restoreCart(cartId, guestId, created, meals, MealCountLimitRuleImpl(10), version)
 
         cart.id shouldBe cartId
         cart.forCustomer shouldBe guestId

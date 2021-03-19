@@ -8,18 +8,20 @@ import com.stringconcat.ddd.order.domain.cart.Cart
 import com.stringconcat.ddd.order.domain.cart.CartId
 import com.stringconcat.ddd.order.domain.cart.CartRestorer
 import com.stringconcat.ddd.order.domain.cart.CustomerId
+import com.stringconcat.ddd.order.domain.cart.MealCountLimitRule
+import com.stringconcat.ddd.order.domain.cart.MealCountLimitRuleImpl
 import com.stringconcat.ddd.order.domain.menu.Meal
 import com.stringconcat.ddd.order.domain.menu.MealDescription
 import com.stringconcat.ddd.order.domain.menu.MealId
 import com.stringconcat.ddd.order.domain.menu.MealName
 import com.stringconcat.ddd.order.domain.menu.MealRestorer
 import com.stringconcat.ddd.order.domain.menu.Price
+import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrderId
-import com.stringconcat.ddd.order.domain.order.OrderItem
 import com.stringconcat.ddd.order.domain.order.CustomerOrderRestorer
+import com.stringconcat.ddd.order.domain.order.OrderItem
 import com.stringconcat.ddd.order.domain.order.OrderState
-import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import com.stringconcat.ddd.order.usecase.cart.CartExtractor
 import com.stringconcat.ddd.order.usecase.cart.CartPersister
 import com.stringconcat.ddd.order.usecase.cart.CartRemover
@@ -93,13 +95,15 @@ fun count(value: Int = Random.nextInt(20, 5000)): Count {
 
 fun cart(
     meals: Map<MealId, Count> = emptyMap(),
-    customerId: CustomerId = customerId()
+    customerId: CustomerId = customerId(),
+    mealCountLimitRule: MealCountLimitRule = MealCountLimitRuleImpl(10)
 ): Cart {
     return CartRestorer.restoreCart(
         id = cartId(),
         forCustomer = customerId,
         created = OffsetDateTime.now(),
         meals = meals,
+        mealCountLimitRule = mealCountLimitRule,
         version = version()
     )
 }

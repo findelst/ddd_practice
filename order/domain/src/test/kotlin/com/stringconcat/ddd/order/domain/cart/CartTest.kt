@@ -5,6 +5,7 @@ import com.stringconcat.ddd.order.domain.cartId
 import com.stringconcat.ddd.order.domain.count
 import com.stringconcat.ddd.order.domain.customerId
 import com.stringconcat.ddd.order.domain.meal
+import io.kotest.assertions.arrow.either.shouldBeLeft
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.date.shouldBeBefore
@@ -20,7 +21,7 @@ internal class CartTest {
     fun `create cart - success`() {
 
         val customerId = customerId()
-        val cart = Cart.create(TestCartIdGenerator, customerId)
+        val cart = Cart.create(TestCartIdGenerator, customerId, MealCountLimitRuleImpl(10))
 
         val id = TestCartIdGenerator.id
         cart.id shouldBe id
@@ -90,6 +91,16 @@ internal class CartTest {
         cart.removeMeals(mealForRemoving.id)
         cart.popEvents() shouldContainExactly listOf(MealRemovedFromCartDomainEvent(cart.id, mealForRemoving.id))
         cart.meals() shouldContainExactly mapOf(meal.id to count)
+    }
+
+    @Test
+    fun `cart add - limit error`() {
+        val meal = meal()
+        val count = count(3)
+        val cart = cart(meals = mapOf(meal.id to count), maxCount = 3)
+
+        val result = cart.addMeal(meal)
+        result shouldBeLeft MaximumNumberOfDishesReachedError
     }
 
     object TestCartIdGenerator : CartIdGenerator {

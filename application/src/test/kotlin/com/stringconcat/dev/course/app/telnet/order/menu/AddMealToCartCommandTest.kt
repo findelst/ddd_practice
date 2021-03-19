@@ -71,6 +71,25 @@ class AddMealToCartCommandTest {
         useCase.verifyZeroInteractions()
     }
 
+    @Test
+    fun `cart has max limit error`() {
+        val mealId = mealId()
+        val customerId = customerId()
+
+        val useCase = TestAddMealToCart(AddMealToCartUseCaseError.MaxLimitMeal.left())
+
+        val command = AddMealToCartCommand(useCase)
+        val result = command.execute(
+            line = "add ${mealId.value}",
+            sessionParameters = emptyMap(),
+            sessionId = UUID.fromString(customerId.value)
+        )
+
+        result shouldBe "Maximum number of dishes reached"
+        useCase.mealId shouldBe mealId
+        useCase.customerId shouldBe customerId
+    }
+
     class TestAddMealToCart(private val response: Either<AddMealToCartUseCaseError, Unit>) : AddMealToCart {
 
         lateinit var mealId: MealId
