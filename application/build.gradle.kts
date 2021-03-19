@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":order:usecase"))
     implementation(project(":order:persistence"))
 
+    implementation(project(":integration:crm"))
     implementation(project(":integration:payment"))
     implementation(project(":integration:telnet"))
 
