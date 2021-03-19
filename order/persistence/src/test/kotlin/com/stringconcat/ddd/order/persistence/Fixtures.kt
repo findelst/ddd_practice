@@ -10,6 +10,7 @@ import com.stringconcat.ddd.order.domain.cart.Cart
 import com.stringconcat.ddd.order.domain.cart.CartId
 import com.stringconcat.ddd.order.domain.cart.CartRestorer
 import com.stringconcat.ddd.order.domain.cart.CustomerId
+import com.stringconcat.ddd.order.domain.cart.MealCountLimitRuleImpl
 import com.stringconcat.ddd.order.domain.menu.Meal
 import com.stringconcat.ddd.order.domain.menu.MealDescription
 import com.stringconcat.ddd.order.domain.menu.MealId
@@ -99,6 +100,7 @@ fun cart(
         forCustomer = customerId,
         created = OffsetDateTime.now(),
         meals = meals,
+        mealCountLimitRule = MealCountLimitRuleImpl(10),
         version = version()
     )
 }

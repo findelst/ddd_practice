@@ -1,8 +1,12 @@
 package com.stringconcat.ddd.order.domain.cart
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.stringconcat.ddd.common.types.base.AggregateRoot
 import com.stringconcat.ddd.common.types.base.Version
 import com.stringconcat.ddd.common.types.common.Count
+import com.stringconcat.ddd.common.types.error.BusinessError
 import com.stringconcat.ddd.order.domain.menu.Meal
 import com.stringconcat.ddd.order.domain.menu.MealId
 import java.time.OffsetDateTime
@@ -11,19 +15,25 @@ class Cart internal constructor(
     id: CartId,
     val forCustomer: CustomerId,
     val created: OffsetDateTime,
+    val mealCountLimitRule: MealCountLimitRule,
     meals: Map<MealId, Count>,
     version: Version
 ) : AggregateRoot<CartId>(id, version) {
 
     companion object {
 
-        fun create(idGenerator: CartIdGenerator, forCustomer: CustomerId): Cart {
+        fun create(
+            idGenerator: CartIdGenerator,
+            forCustomer: CustomerId,
+            mealCountLimitRule: MealCountLimitRule
+        ): Cart {
             return Cart(
                 id = idGenerator.generate(),
                 forCustomer = forCustomer,
                 created = OffsetDateTime.now(),
                 version = Version.new(),
-                meals = emptyMap()
+                meals = emptyMap(),
+                mealCountLimitRule = mealCountLimitRule
             ).apply {
                 addEvent(CartCreatedDomainEvent(cartId = this.id))
             }
@@ -36,15 +46,19 @@ class Cart internal constructor(
 
     fun addMeal(
         meal: Meal
-    ) {
+    ): Either<MaximumNumberOfDishesReachedError, Unit> {
         val mealId = meal.id
         val count = meals[mealId]
+
+        if (mealCountLimitRule.check(this)) {
+            return MaximumNumberOfDishesReachedError.left()
+        }
 
         return if (count == null) {
             createNewMeal(mealId)
         } else {
             updateExistingMeal(mealId, count)
-        }
+        }.right()
     }
 
     private fun updateExistingMeal(
@@ -73,3 +87,5 @@ class Cart internal constructor(
         }
     }
 }
+
+object MaximumNumberOfDishesReachedError : BusinessError

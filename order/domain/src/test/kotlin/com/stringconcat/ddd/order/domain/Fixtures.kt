@@ -8,18 +8,19 @@ import com.stringconcat.ddd.order.domain.cart.Cart
 import com.stringconcat.ddd.order.domain.cart.CartId
 import com.stringconcat.ddd.order.domain.cart.CartRestorer
 import com.stringconcat.ddd.order.domain.cart.CustomerId
+import com.stringconcat.ddd.order.domain.cart.MealCountLimitRuleImpl
 import com.stringconcat.ddd.order.domain.menu.Meal
 import com.stringconcat.ddd.order.domain.menu.MealDescription
 import com.stringconcat.ddd.order.domain.menu.MealId
 import com.stringconcat.ddd.order.domain.menu.MealName
 import com.stringconcat.ddd.order.domain.menu.MealRestorer
 import com.stringconcat.ddd.order.domain.menu.Price
+import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrderId
-import com.stringconcat.ddd.order.domain.order.OrderItem
 import com.stringconcat.ddd.order.domain.order.CustomerOrderRestorer
+import com.stringconcat.ddd.order.domain.order.OrderItem
 import com.stringconcat.ddd.order.domain.order.OrderState
-import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -81,12 +82,13 @@ fun count(value: Int = Random.nextInt(20, 5000)): Count {
     return result.b
 }
 
-fun cart(meals: Map<MealId, Count> = emptyMap()): Cart {
+fun cart(meals: Map<MealId, Count> = emptyMap(), maxCount: Int = 10): Cart {
     return CartRestorer.restoreCart(
         id = cartId(),
         forCustomer = customerId(),
         created = OffsetDateTime.now(),
         meals = meals,
+        mealCountLimitRule = MealCountLimitRuleImpl(maxCount),
         version = version()
     )
 }

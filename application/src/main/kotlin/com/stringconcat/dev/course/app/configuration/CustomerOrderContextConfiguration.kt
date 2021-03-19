@@ -2,11 +2,13 @@ package com.stringconcat.dev.course.app.configuration
 
 import com.stringconcat.ddd.common.types.base.EventPublisher
 import com.stringconcat.ddd.order.domain.cart.CartIdGenerator
+import com.stringconcat.ddd.order.domain.cart.MealCountLimitRule
+import com.stringconcat.ddd.order.domain.cart.MealCountLimitRuleImpl
+import com.stringconcat.ddd.order.domain.menu.MealAlreadyExists
 import com.stringconcat.ddd.order.domain.menu.MealIdGenerator
+import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrderIdGenerator
 import com.stringconcat.ddd.order.domain.order.MealPriceProvider
-import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
-import com.stringconcat.ddd.order.domain.menu.MealAlreadyExists
 import com.stringconcat.ddd.order.persistence.cart.InMemoryCartRepository
 import com.stringconcat.ddd.order.persistence.cart.InMemoryIncrementalCartIdGenerator
 import com.stringconcat.ddd.order.persistence.menu.InMemoryIncrementalMealIdGenerator
@@ -41,13 +43,17 @@ import com.stringconcat.ddd.order.usecase.rules.MealAlreadyExistsImpl
 import com.stringconcat.dev.course.app.event.EventPublisherImpl
 import com.stringconcat.dev.course.app.listeners.RemoveCartAfterCheckoutRule
 import com.stringconcat.integration.payment.SimplePaymentUrlProvider
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.net.URL
 
 @Suppress("TooManyFunctions")
 @Configuration
-class CustomerOrderContextConfiguration {
+class CustomerOrderContextConfiguration(
+    @Value("\${cart.limit.max}")
+    private val cartLimitMax: Int
+) {
 
     @Bean
     fun cartRepository(eventPublisher: EventPublisher) = InMemoryCartRepository(eventPublisher)
@@ -72,12 +78,14 @@ class CustomerOrderContextConfiguration {
         cartExtractor: CartExtractor,
         idGenerator: CartIdGenerator,
         mealExtractor: MealExtractor,
-        cartPersister: CartPersister
+        cartPersister: CartPersister,
+        mealCountLimitRule: MealCountLimitRule
     ) = AddMealToCartUseCase(
         cartExtractor = cartExtractor,
         idGenerator = idGenerator,
         mealExtractor = mealExtractor,
-        cartPersister = cartPersister
+        cartPersister = cartPersister,
+        mealCountLimitRule = mealCountLimitRule
     )
 
     @Bean
@@ -213,4 +221,7 @@ class CustomerOrderContextConfiguration {
         domainEventPublisher.registerListener(listener)
         return listener
     }
+
+    @Bean
+    fun mealCountLimitRule() = MealCountLimitRuleImpl(cartLimitMax)
 }
