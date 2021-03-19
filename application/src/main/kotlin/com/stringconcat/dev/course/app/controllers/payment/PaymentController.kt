@@ -1,7 +1,7 @@
 package com.stringconcat.dev.course.app.controllers.payment
 
 import com.stringconcat.ddd.order.domain.order.CustomerOrderId
-import com.stringconcat.ddd.order.usecase.order.PayOrder
+import com.stringconcat.ddd.order.usecase.order.PayOrderHandlerWithCrm
 import com.stringconcat.dev.course.app.controllers.URLs
 import com.stringconcat.dev.course.app.controllers.Views
 import org.springframework.stereotype.Controller
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 @RequestMapping(URLs.payment)
-class PaymentController(private val payOrder: PayOrder) {
+class PaymentController(private val payOrder: PayOrderHandlerWithCrm) {
 
     companion object {
         const val ERROR_ATTRIBUTE = "error"

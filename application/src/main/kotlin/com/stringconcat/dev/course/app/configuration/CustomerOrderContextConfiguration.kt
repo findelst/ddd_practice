@@ -2,11 +2,11 @@ package com.stringconcat.dev.course.app.configuration
 
 import com.stringconcat.ddd.common.types.base.EventPublisher
 import com.stringconcat.ddd.order.domain.cart.CartIdGenerator
+import com.stringconcat.ddd.order.domain.menu.MealAlreadyExists
 import com.stringconcat.ddd.order.domain.menu.MealIdGenerator
+import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrderIdGenerator
 import com.stringconcat.ddd.order.domain.order.MealPriceProvider
-import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
-import com.stringconcat.ddd.order.domain.menu.MealAlreadyExists
 import com.stringconcat.ddd.order.persistence.cart.InMemoryCartRepository
 import com.stringconcat.ddd.order.persistence.cart.InMemoryIncrementalCartIdGenerator
 import com.stringconcat.ddd.order.persistence.menu.InMemoryIncrementalMealIdGenerator
@@ -29,17 +29,20 @@ import com.stringconcat.ddd.order.usecase.order.CancelOrderUseCase
 import com.stringconcat.ddd.order.usecase.order.CheckoutUseCase
 import com.stringconcat.ddd.order.usecase.order.CompleteOrderUseCase
 import com.stringconcat.ddd.order.usecase.order.ConfirmOrderUseCase
+import com.stringconcat.ddd.order.usecase.order.CrmProvider
 import com.stringconcat.ddd.order.usecase.order.CustomerOrderExtractor
 import com.stringconcat.ddd.order.usecase.order.CustomerOrderPersister
 import com.stringconcat.ddd.order.usecase.order.GetLastOrderStateUseCase
 import com.stringconcat.ddd.order.usecase.order.GetOrdersUseCase
 import com.stringconcat.ddd.order.usecase.order.PayOrderHandler
+import com.stringconcat.ddd.order.usecase.order.PayOrderHandlerWithCrm
 import com.stringconcat.ddd.order.usecase.order.PaymentUrlProvider
 import com.stringconcat.ddd.order.usecase.providers.MealPriceProviderImpl
 import com.stringconcat.ddd.order.usecase.rules.CustomerHasActiveOrderImpl
 import com.stringconcat.ddd.order.usecase.rules.MealAlreadyExistsImpl
 import com.stringconcat.dev.course.app.event.EventPublisherImpl
 import com.stringconcat.dev.course.app.listeners.RemoveCartAfterCheckoutRule
+import com.stringconcat.integration.crm.CrmSenderProvider
 import com.stringconcat.integration.payment.SimplePaymentUrlProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -137,6 +140,17 @@ class CustomerOrderContextConfiguration {
     )
 
     @Bean
+    fun payOrderHandlerWithCrm(
+        customerOrderExtractor: CustomerOrderExtractor,
+        payOrderHandler: PayOrderHandler,
+        crmProvider: CrmProvider
+    ) = PayOrderHandlerWithCrm(
+        customerOrderExtractor = customerOrderExtractor,
+        payOrder = payOrderHandler,
+        crmProvider = crmProvider
+    )
+
+    @Bean
     fun cancelOrderUseCase(
         customerOrderExtractor: CustomerOrderExtractor,
         customerOrderPersister: CustomerOrderPersister
@@ -213,4 +227,7 @@ class CustomerOrderContextConfiguration {
         domainEventPublisher.registerListener(listener)
         return listener
     }
+
+    @Bean
+    fun crmProvider(): CrmProvider = CrmSenderProvider()
 }

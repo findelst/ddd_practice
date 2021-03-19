@@ -14,17 +14,18 @@ import com.stringconcat.ddd.order.domain.menu.MealId
 import com.stringconcat.ddd.order.domain.menu.MealName
 import com.stringconcat.ddd.order.domain.menu.MealRestorer
 import com.stringconcat.ddd.order.domain.menu.Price
+import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrder
 import com.stringconcat.ddd.order.domain.order.CustomerOrderId
-import com.stringconcat.ddd.order.domain.order.OrderItem
 import com.stringconcat.ddd.order.domain.order.CustomerOrderRestorer
+import com.stringconcat.ddd.order.domain.order.OrderItem
 import com.stringconcat.ddd.order.domain.order.OrderState
-import com.stringconcat.ddd.order.domain.order.CustomerHasActiveOrder
 import com.stringconcat.ddd.order.usecase.cart.CartExtractor
 import com.stringconcat.ddd.order.usecase.cart.CartPersister
 import com.stringconcat.ddd.order.usecase.cart.CartRemover
 import com.stringconcat.ddd.order.usecase.menu.MealExtractor
 import com.stringconcat.ddd.order.usecase.menu.MealPersister
+import com.stringconcat.ddd.order.usecase.order.CrmProvider
 import com.stringconcat.ddd.order.usecase.order.CustomerOrderExtractor
 import com.stringconcat.ddd.order.usecase.order.CustomerOrderPersister
 import java.math.BigDecimal
@@ -193,5 +194,13 @@ class TestCartRemover : CartRemover {
     internal val deleted = ArrayList<CartId>()
     override fun deleteCart(cart: Cart) {
         deleted.add(cart.id)
+    }
+}
+
+class TestCrmProvider : CrmProvider {
+    internal val orders: MutableMap<CustomerOrderId, Price> = mutableMapOf()
+
+    override fun send(orderId: CustomerOrderId, price: Price) {
+        orders[orderId] = price
     }
 }
