@@ -1,7 +1,8 @@
 style:
   NewLineAtEndOfFile:
     active: false
-
+  ReturnCount:
+    max: 3
 
 complexity:
   LongParameterList:

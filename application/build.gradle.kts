@@ -9,6 +9,10 @@ dependencies {
     // project
     implementation(project(":common:types"))
 
+    implementation(project(":delivery:domain"))
+    implementation(project(":delivery:usecase"))
+    implementation(project(":delivery:persistence"))
+
     implementation(project(":kitchen:domain"))
     implementation(project(":kitchen:usecase"))
     implementation(project(":kitchen:persistence"))
