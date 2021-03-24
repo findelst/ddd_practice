@@ -30,5 +30,5 @@ class KitchenContextConfiguration {
     ) = CreateOrderHandler(kitchenOrderExtractor, kitchenOrderPersister)
 
     @Bean
-    fun getOrdersUseCase(kitchenOrderExtractor: KitchenOrderExtractor) = GetOrdersUseCase(kitchenOrderExtractor)
+    fun getKitchenOrdersUseCase(kitchenOrderExtractor: KitchenOrderExtractor) = GetOrdersUseCase(kitchenOrderExtractor)
 }

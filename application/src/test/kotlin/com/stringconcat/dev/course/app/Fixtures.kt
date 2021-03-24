@@ -4,6 +4,7 @@ import arrow.core.Either
 import com.stringconcat.ddd.common.types.base.Version
 import com.stringconcat.ddd.common.types.common.Address
 import com.stringconcat.ddd.common.types.common.Count
+import com.stringconcat.ddd.kitchen.domain.order.KitchenOrderId
 import com.stringconcat.ddd.order.domain.cart.CustomerId
 import com.stringconcat.ddd.order.domain.menu.Meal
 import com.stringconcat.ddd.order.domain.menu.MealDescription
@@ -32,6 +33,7 @@ fun mealName(name: String = "Name ${Random.nextInt()}"): MealName {
 }
 
 fun orderId() = CustomerOrderId(Random.nextLong())
+fun kitchenOrderId() = KitchenOrderId(Random.nextLong())
 
 fun mealDescription(description: String = "Description ${Random.nextInt()}"): MealDescription {
     val result = MealDescription.from(description)
@@ -82,7 +84,6 @@ fun customerOrder(
 }
 
 fun meal(removed: Boolean = false): Meal {
-
     return MealRestorer.restoreMeal(
         id = mealId(),
         name = mealName(),

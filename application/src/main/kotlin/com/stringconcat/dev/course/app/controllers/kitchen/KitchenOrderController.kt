@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 class KitchenOrderController(
-    private val getOrdersUseCase: GetOrders,
+    private val getKitchenOrdersUseCase: GetOrders,
     private val cookOrder: CookOrder
 ) {
 
@@ -24,14 +24,14 @@ class KitchenOrderController(
 
     @GetMapping(URLs.kitchen_orders)
     fun orders(map: ModelMap): String {
-        map.addAttribute(ORDERS_ATTRIBUTE, getOrdersUseCase.execute())
+        map.addAttribute(ORDERS_ATTRIBUTE, getKitchenOrdersUseCase.execute())
         return Views.kitchen_orders
     }
 
     @PostMapping(URLs.cook_kitchen_order)
     fun confirm(@RequestParam orderId: Long, map: ModelMap): String {
         cookOrder.execute(KitchenOrderId(orderId)).mapLeft {
-            map.addAttribute(ORDERS_ATTRIBUTE, getOrdersUseCase.execute())
+            map.addAttribute(ORDERS_ATTRIBUTE, getKitchenOrdersUseCase.execute())
             map.addAttribute(ERROR_ATTRIBUTE, it.message)
             return@confirm Views.customer_orders
         }
